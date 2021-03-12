@@ -17,22 +17,11 @@ import java.util.Date;
 
 public class OfferItem {
 
-    // product
-    private String productId;
-
-    private Money productPrice;
-
-    private String productName;
-
-    private Date productSnapshotDate;
-
-    private String productType;
+    private Product product;
 
     private int quantity;
 
     private Money totalCost;
-
-    private String currency;
 
     // discount
     private String discountCause;
@@ -46,42 +35,38 @@ public class OfferItem {
 
     public OfferItem(String productId, Money productPrice, String productName, Date productSnapshotDate,
             String productType, int quantity, Money discount, String discountCause) {
-        this.productId = productId;
-        this.productPrice = productPrice;
-        this.productName = productName;
-        this.productSnapshotDate = productSnapshotDate;
-        this.productType = productType;
 
+        this.product = new Product(productId, productPrice, productName, productSnapshotDate, productType);
         this.quantity = quantity;
         this.discount = discount;
         this.discountCause = discountCause;
 
         BigDecimal discountValue = new BigDecimal(0);
         if (discount != null) {
-            discountValue = discountValue.add(discount.getDenomination());
+            discountValue = discountValue.add(discount.getValue());
         }
 
-        this.totalCost = new Money("EUR",productPrice.getDenomination().multiply(new BigDecimal(quantity)).subtract(discountValue));
+        this.totalCost = new Money("EUR",productPrice.getValue().multiply(new BigDecimal(quantity)).subtract(discountValue));
     }
 
     public String getProductId() {
-        return productId;
+        return product.getId();
     }
 
     public Money getProductPrice() {
-        return productPrice;
+        return product.getPrice();
     }
 
     public String getProductName() {
-        return productName;
+        return product.getName();
     }
 
     public Date getProductSnapshotDate() {
-        return productSnapshotDate;
+        return product.getSnapshotDate();
     }
 
     public String getProductType() {
-        return productType;
+        return product.getType();
     }
 
     public Money getTotalCost() {
@@ -103,10 +88,10 @@ public class OfferItem {
         final int prime = 31;
         int result = 1;
         result = prime * result + (discount == null ? 0 : discount.hashCode());
-        result = prime * result + (productName == null ? 0 : productName.hashCode());
-        result = prime * result + (productPrice == null ? 0 : productPrice.hashCode());
-        result = prime * result + (productId == null ? 0 : productId.hashCode());
-        result = prime * result + (productType == null ? 0 : productType.hashCode());
+        result = prime * result + (product.getName() == null ? 0 : product.getName().hashCode());
+        result = prime * result + (product.getPrice() == null ? 0 : product.getPrice().hashCode());
+        result = prime * result + (product.getId() == null ? 0 : product.getId().hashCode());
+        result = prime * result + (product.getType() == null ? 0 : product.getType().hashCode());
         result = prime * result + quantity;
         result = prime * result + (totalCost == null ? 0 : totalCost.hashCode());
         return result;
@@ -131,28 +116,11 @@ public class OfferItem {
         } else if (!discount.equals(other.discount)) {
             return false;
         }
-        if (productName == null) {
-            if (other.productName != null) {
+        if (product == null) {
+            if (other.product != null) {
                 return false;
             }
-        } else if (!productName.equals(other.productName)) {
-            return false;
-        }
-        if (productPrice == null) {
-            if (other.productPrice != null) {
-                return false;
-            }
-        } else if (!productPrice.equals(other.productPrice)) {
-            return false;
-        }
-        if (productId == null) {
-            if (other.productId != null) {
-                return false;
-            }
-        } else if (!productId.equals(other.productId)) {
-            return false;
-        }
-        if (productType != other.productType) {
+        } else if (!product.equals(other.product)) {
             return false;
         }
         if (quantity != other.quantity) {
@@ -176,28 +144,11 @@ public class OfferItem {
      * @return
      */
     public boolean sameAs(OfferItem other, double delta) {
-        if (productName == null) {
-            if (other.productName != null) {
+        if (product == null) {
+            if (other!= null) {
                 return false;
             }
-        } else if (!productName.equals(other.productName)) {
-            return false;
-        }
-        if (productPrice == null) {
-            if (other.productPrice != null) {
-                return false;
-            }
-        } else if (!productPrice.equals(other.productPrice)) {
-            return false;
-        }
-        if (productId == null) {
-            if (other.productId != null) {
-                return false;
-            }
-        } else if (!productId.equals(other.productId)) {
-            return false;
-        }
-        if (productType != other.productType) {
+        } else if (!product.equals(other.product)) {
             return false;
         }
 
@@ -207,12 +158,12 @@ public class OfferItem {
 
         BigDecimal max;
         BigDecimal min;
-        if (totalCost.getDenomination().compareTo(other.totalCost.getDenomination()) > 0) {
-            max = totalCost.getDenomination();
-            min = other.totalCost.getDenomination();
+        if (totalCost.getValue().compareTo(other.totalCost.getValue()) > 0) {
+            max = totalCost.getValue();
+            min = other.totalCost.getValue();
         } else {
-            max = other.totalCost.getDenomination();
-            min = totalCost.getDenomination();
+            max = other.totalCost.getValue();
+            min = totalCost.getValue();
         }
 
         BigDecimal difference = max.subtract(min);
